@@ -46,6 +46,8 @@ public:
   double compute(const Vector& v1,const Vector& v2,const Vector& v3)const;
 /// This is the version which also computes the derivatives wrt the arguments.
   double compute(const Vector& v1,const Vector& v2,const Vector& v3,Vector& d1,Vector& d2,Vector& d3)const;
+/// This is the version which also computes the derivatives wrt the arguments and sin and cos
+  void compute(const Vector& v1,const Vector& v2,const Vector& v3,double&cosangle,double&sinangle,Vector& ds_d1,Vector& ds_d2,Vector& ds_d3,Vector& dc_d1,Vector& dc_d2,Vector& dc_d3)const;
 };
 
 }
