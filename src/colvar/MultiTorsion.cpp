@@ -126,8 +126,6 @@ void MultiTorsion::calculate() {
     auto dcc_d0=dc_d0*sqr+c*dc_d0*fc+c*ds_d0*fs;
     auto dcc_d1=dc_d1*sqr+c*dc_d1*fc+c*ds_d1*fs;
     auto dcc_d2=dc_d2*sqr+c*dc_d2*fc+c*ds_d2*fs;
-    // sin(nx)
-    k=0;
     if(maxn>0) {
       components[k]->set(ss);
       setAtomsDerivatives(components[k],4*i+0,dss_d0);
