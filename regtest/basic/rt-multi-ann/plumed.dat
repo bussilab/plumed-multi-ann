@@ -1,4 +1,16 @@
 # vim:ft=plumed
+
+# test generated with:
+##  import bussilab
+##  import numpy as np
+##  ann=bussilab.ann.ANN([4,3,2],random_weights=True)
+##  for bb in ann.b:
+##      bb[:]=np.random.normal(size=len(bb))
+##  ann.dumpPlumed("ann_multi.dat")
+##  ann.dumpPlumed("ann_combine1.dat",style="combine",prefix="ann1",arguments="x1.x,x2.x,x3.x,x4.x")
+##  ann.dumpPlumed("ann_combine2.dat",style="combine",prefix="ann2",arguments="x5.x,x6.x,x7.x,x8.x")
+##  ann.dumpPlumed("ann_combine3.dat",style="combine",prefix="ann3",arguments="x9.x,x10.x,x11.x,x12.x")
+
 x1: POSITION ATOM=1
 x2: POSITION ATOM=2
 x3: POSITION ATOM=3
@@ -12,32 +24,17 @@ x10: POSITION ATOM=10
 x11: POSITION ATOM=11
 x12: POSITION ATOM=12
 
-m: MULTI_ANN ARG=(x.\.x),(x..\.x) PARAMETERS=ann.dat groupby=4
+m: MULTI_ANN ARG=(x.\.x),(x..\.x) PARAMETERS=ann_multi.dat groupby=4
 
-one: CONSTANT VALUE=1.0
+INCLUDE FILE=ann_combine1.dat
+INCLUDE FILE=ann_combine2.dat
+INCLUDE FILE=ann_combine3.dat
 
-h110: COMBINE PERIODIC=NO ARG=x1.x,x2.x,x3.x,x4.x,one COEFFICIENTS=10,5,-2,-1.1,7
-h111: COMBINE PERIODIC=NO ARG=x1.x,x2.x,x3.x,x4.x,one COEFFICIENTS=0.1,6.0,-2,-3,8
-h120: CUSTOM PERIODIC=NO FUNC=log(1+exp(-abs(x)))+max(x,0) ARG=h110
-h121: CUSTOM PERIODIC=NO FUNC=log(1+exp(-abs(x)))+max(x,0) ARG=h111
-h13: COMBINE PERIODIC=NO ARG=h120,h121,one COEFFICIENTS=7,8,-1
-
-h210: COMBINE PERIODIC=NO ARG=x5.x,x6.x,x7.x,x8.x,one COEFFICIENTS=10,5,-2,-1.1,7
-h211: COMBINE PERIODIC=NO ARG=x5.x,x6.x,x7.x,x8.x,one COEFFICIENTS=0.1,6.0,-2,-3,8
-h220: CUSTOM PERIODIC=NO FUNC=log(1+exp(-abs(x)))+max(x,0) ARG=h210
-h221: CUSTOM PERIODIC=NO FUNC=log(1+exp(-abs(x)))+max(x,0) ARG=h211
-h23: COMBINE PERIODIC=NO ARG=h220,h221,one COEFFICIENTS=7,8,-1
-
-h310: COMBINE PERIODIC=NO ARG=x9.x,x10.x,x11.x,x12.x,one COEFFICIENTS=10,5,-2,-1.1,7
-h311: COMBINE PERIODIC=NO ARG=x9.x,x10.x,x11.x,x12.x,one COEFFICIENTS=0.1,6.0,-2,-3,8
-h320: CUSTOM PERIODIC=NO FUNC=log(1+exp(-abs(x)))+max(x,0) ARG=h310
-h321: CUSTOM PERIODIC=NO FUNC=log(1+exp(-abs(x)))+max(x,0) ARG=h311
-h33: COMBINE PERIODIC=NO ARG=h320,h321,one COEFFICIENTS=7,8,-1
-
-res: COMBINE PERIODIC=NO ARG=h13,h23,h33
+res: COMBINE PERIODIC=NO ARG=(.*_result)
 
 PRINT ARG=m,res FILE=colvar
 
+# adding and removing the same force should result in a zero total force
 mres: COMBINE PERIODIC=NO ARG=res COEFFICIENTS=-1.0
 BIASVALUE ARG=m 
 BIASVALUE ARG=mres
